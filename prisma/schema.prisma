@@ -20,7 +20,7 @@ model Feature {
 
 model Account {
   id        Int      @id @default(autoincrement())
-  accountNumber      String   @db.VarChar(7)
+  accountNumber      String   @unique @db.VarChar(7)
   agency     String   @db.VarChar(4)
   status     Boolean   @default(true)
   balance     Float   @default(0)

@@ -1,5 +1,7 @@
 import express, { Express } from 'express';
 import cors from 'cors';
+import swaggerUi from 'swagger-ui-express';
+import swaggerDocument from './swagger.json';
 
 class App {
   public app: Express;
@@ -17,6 +19,7 @@ class App {
   private config(): void {
     this.app.use(express.json());
     this.app.use(cors());
+    this.app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
   }
 
   public start(PORT: number | string): void {

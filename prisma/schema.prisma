@@ -1,0 +1,51 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-1.1.x", "windows", "linux-musl"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Feature {
+  id        Int      @id @default(autoincrement())
+  name      String   @db.VarChar(255)
+  icon     String   @db.VarChar(255)
+  description     String   @db.VarChar(255)
+}
+
+model Account {
+  id        Int      @id @default(autoincrement())
+  accountNumber      String   @db.VarChar(7)
+  agency     String   @db.VarChar(4)
+  status     Boolean   @default(true)
+  balance     Float   @default(0)
+  limit     Float   @default(0)
+  userId    Int     @unique
+  user  User? @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  transactions Transaction[]
+}
+
+model Transaction {
+  id        Int      @id @default(autoincrement())
+  date      DateTime @default(now())
+  value     Float  @default(0)
+  cashback  Float  @default(0)
+  accountId  Int   @unique
+  account  Account? @relation(fields: [accountId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String  @db.VarChar(255)
+  email     String   @unique @db.VarChar(255)
+  password  String   @db.VarChar(255)
+  cpf       String   @unique @db.VarChar(11)
+  cnpj      String   @unique @db.VarChar(14)
+  account  Account?
+  featureIds Int[] @default([1, 2, 3])
+}

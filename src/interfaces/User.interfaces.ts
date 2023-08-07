@@ -13,6 +13,7 @@ export interface IUserModel {
     prismaClient: PrismaClient;
     register(registerReq: IUserRegister): Promise<number | null>;
     getUserByEmail(email: string): Promise<User | null>;
+    getUserByCpfOrCnpj(cpfOrCnpj: string): Promise<User[]>;
 }
 
 export interface IUserRegister {

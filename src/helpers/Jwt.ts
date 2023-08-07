@@ -1,6 +1,6 @@
 import { sign, verify } from 'jsonwebtoken';
 import CustomError from './CustomError';
-import { IJwt } from '../interfaces/security.interfaces';
+import { IJwt, IJwtPayload } from '../interfaces/security.interfaces';
 
 export default class Jwt implements IJwt {
   private _secret: string;
@@ -11,7 +11,7 @@ export default class Jwt implements IJwt {
     this._options = { expiresIn: '24h', algorithm: 'HS256' };
   }
 
-  public createToken(payload: string): string {
+  public createToken(payload: IJwtPayload): string {
     return sign({ data: payload }, this._secret, this._options);
   }
 

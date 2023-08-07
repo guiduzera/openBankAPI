@@ -44,8 +44,8 @@ model User {
   name      String  @db.VarChar(255)
   email     String   @unique @db.VarChar(255)
   password  String   @db.VarChar(255)
-  cpf       String   @unique @db.VarChar(11)
-  cnpj      String   @unique @db.VarChar(14)
+  cpf       String   @db.VarChar(11)
+  cnpj      String   @db.VarChar(14)
   account  Account?
   featureIds Int[] @default([1, 2, 3])
 }

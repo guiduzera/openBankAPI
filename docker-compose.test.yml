@@ -8,29 +8,29 @@ services:
     working_dir: /app-backend
     command: npm run dev
     environment:
-      - DATABASE_URL=postgresql://postgres:password@db/openbanking?schema=public
-      - NODE_ENV=development
+      - DATABASE_URL=postgresql://prisma:prisma@dbtest/tests
+      - NODE_ENV=test
       - PORT=3001
       - JWT_SECRET=secret
     volumes:
       - ./src:/app-backend/src
     depends_on:
-      db:
+      dbtest:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "lsof", "-t", "-i:3001"] # Caso utilize outra porta interna para o back, altere ela aqui também
       timeout: 10s
       retries: 5
-  db:
+  dbtest:
     image: postgres:13.3-alpine
-    container_name: db
+    container_name: dbtest
     platform: linux/x86_64
     ports:
-      - "5432:5432"
+      - "5433:5432"
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=password
-      - POSTGRES_DB=openbanking
+      - POSTGRES_USER=prisma
+      - POSTGRES_PASSWORD=prisma
+      - POSTGRES_DB=tests
     restart: always
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "postgres"]

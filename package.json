@@ -11,8 +11,9 @@
     "migrate:dev:test": "dotenv -e .env.test -- prisma migrate dev",
     "compose:test:up": "docker-compose -f docker-compose.test.yml up -d --build",
     "compose:test:down": "docker-compose -f docker-compose.test.yml down --remove-orphans",
-    "test": "dotenv -e .env.test -- npm run compose:dev:down && npm run compose:test:up && npm run migrate:dev:test && dotenv -e .env.test -- npx jest --detectOpenHandles --forceExit --verbose --runInBand",
-    "compose:dev:up": "npm run compose:test:down && docker-compose -f docker-compose.dev.yml up -d --build",
+    "test": "dotenv -e .env.test -- npm run compose:test:up && npm run migrate:dev:test && dotenv -e .env.test -- npx jest --verbose --runInBand && npm run compose:test:down",
+    "test:dev": "dotenv -e .env.test -- npm run compose:test:up && npm run migrate:dev:test && dotenv -e .env.test -- npx jest --verbose --runInBand && npm run compose:test:down && npm run compose:dev:up",
+    "compose:dev:up": "docker-compose -f docker-compose.dev.yml up -d --build && npx prisma migrate dev",
     "compose:dev:down": "docker-compose -f docker-compose.dev.yml down --remove-orphans"
   },
   "keywords": [],

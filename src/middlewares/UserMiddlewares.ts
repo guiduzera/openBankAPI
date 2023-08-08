@@ -11,8 +11,8 @@ export default class UserMiddlewares {
         return res.status(400).json({ message: 'Preencha todos os campos!' });
       }
 
-      if (cpf.length !== 11 && cnpj.length !== 14) {
-        return res.status(400).json({ message: 'CPF ou CNPJ inválido!' });
+      if (cpf.length > 0 && cpf.length !== 11 || cnpj.length > 0 && cnpj.length !== 14) {
+        return res.status(400).json({ message: 'O campo cpf ou cnpj deve conter 11 ou 14 caracteres!' });
       }
 
       const parsed = registerZodSchema.safeParse({ name, email, password, cpf, cnpj });

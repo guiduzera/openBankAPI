@@ -37,6 +37,11 @@ export default class UserMiddlewares {
         return res.status(400).json({ message: 'Preencha todos os campos!' });
       }
 
+      // accountNumber deve seguri o padrão 00000-0
+      if (accountNumber.length !== 7 || accountNumber[5] !== '-') {
+        return res.status(400).json({ message: 'O campo accountNumber deve seguir o padrão 00000-0!' });
+      }
+
       return next();
     } catch (error) {
       next(error);

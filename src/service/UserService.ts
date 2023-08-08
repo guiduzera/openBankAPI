@@ -22,15 +22,13 @@ export default class UserService implements IUserService {
 
     if (!account || account.agency !== agency) throw new CustomError('Conta não encontrada!', 404);
 
-    const user = await this.userModel.getUserByEmail(account.user?.email || '');
-
-    if (!user) throw new CustomError('Usuário não encontrado!', 404);
-
-    const isPasswordValid = await this.bcrypt.comparePassword(password, user.password);
+    const isPasswordValid = await this.bcrypt.comparePassword(password, account.user?.password || '');
 
     if (!isPasswordValid) throw new CustomError('Senha inválida!', 401);
 
-    const token = this.jwt.createToken({ name: user.name, ...account });
+    const { name } = account.user || { name: '' };
+
+    const token = this.jwt.createToken({ name, ...account });
 
     return token;
   }

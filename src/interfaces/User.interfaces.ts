@@ -1,12 +1,14 @@
 import { PrismaClient, User } from '@prisma/client'
 import { IBycript, IJwt } from './security.interfaces';
+import { IAccountModel } from './Account.interfaces';
 
 export interface IUserService {
     userModel: IUserModel;
-    accountModel: unknown;
+    accountModel: IAccountModel;
     jwt: IJwt;
     bcrypt: IBycript;
     register(registerReq: IUserRegister): Promise<string>;
+    login(loginReq: IUserLogin): Promise<string>;
 }
 
 export interface IUserModel {
@@ -22,4 +24,10 @@ export interface IUserRegister {
     password: string;
     cpf: string;
     cnpj: string;
+}
+
+export interface IUserLogin {
+    accountNumber: string;
+    agency: string;
+    password: string;
 }

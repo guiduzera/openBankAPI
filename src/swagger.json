@@ -79,6 +79,100 @@
           }
         }
       }
+    },
+    "/users/login": {
+      "post": {
+        "tags": ["Usuário"],
+        "summary": "Realiza login do usuário",
+        "description": "Realiza login do usuário",
+        "requestBody": {
+          "description": "Objeto JSON que representa a requisição de login",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "accountNumber": {
+                    "description": "Número da conta",
+                    "type": "string"
+                  },
+                  "agency": {
+                    "description": "Número da agência",
+                    "type": "string"
+                  },
+                  "password": {
+                    "description": "Senha da conta",
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "token de acesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "usuário não encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "senha incorreta",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Erro ao realizar login",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -107,6 +201,29 @@
           },
           "cnpj": {
             "type": "string"
+          }
+        }
+      },
+      "Account": {
+        "type": "object",
+        "properties": {
+          "agency": {
+            "type": "string"
+          },
+          "accountNumber": {
+            "type": "string"
+          },
+          "balance": {
+            "type": "number"
+          },
+          "userId": {
+            "type": "string"
+          },
+          "status": {
+            "type": "boolean"
+          },
+          "limit": {
+            "type": "number"
           }
         }
       }

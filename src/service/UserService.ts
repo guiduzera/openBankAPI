@@ -1,6 +1,6 @@
 import { IAccountModel } from '../interfaces/Account.interfaces';
 import CustomError from '../helpers/CustomError';
-import { IUserModel, IUserRegister, IUserService } from '../interfaces/User.interfaces';
+import { IUserLogin, IUserModel, IUserRegister, IUserService } from '../interfaces/User.interfaces';
 import { IBycript, IJwt } from '../interfaces/security.interfaces';
 
 export default class UserService implements IUserService {
@@ -14,6 +14,25 @@ export default class UserService implements IUserService {
     this.accountModel = accountModel;
     this.jwt = jwt;
     this.bcrypt = bcrypt;
+  }
+
+  public async login(loginReq: IUserLogin): Promise<string> {
+    const { accountNumber, agency, password } = loginReq;
+    const account = await this.accountModel.getByAccountNumber(accountNumber);
+
+    if (!account || account.agency !== agency) throw new CustomError('Conta não encontrada!', 404);
+
+    const user = await this.userModel.getUserByEmail(account.user?.email || '');
+
+    if (!user) throw new CustomError('Usuário não encontrado!', 404);
+
+    const isPasswordValid = await this.bcrypt.comparePassword(password, user.password);
+
+    if (!isPasswordValid) throw new CustomError('Senha inválida!', 401);
+
+    const token = this.jwt.createToken({ name: user.name, ...account });
+
+    return token;
   }
 
   public async register(registerReq: IUserRegister): Promise<string> {

@@ -31,5 +31,6 @@ export default class UserRoutes {
 
   private userRoutes(): void {
     this.router.post('/register', UserMiddlewares.verifyFields, this.userController.register);
+    this.router.post('/login', UserMiddlewares.verifyLoginFields, this.userController.login);
   }
 }

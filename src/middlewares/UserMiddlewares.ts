@@ -28,4 +28,18 @@ export default class UserMiddlewares {
       next(error);
     }
   }
+
+  public static async verifyLoginFields(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+    try {
+      const { accountNumber, agency, password } = req.body;
+
+      if (!accountNumber || !agency || !password) {
+        return res.status(400).json({ message: 'Preencha todos os campos!' });
+      }
+
+      return next();
+    } catch (error) {
+      next(error);
+    }
+  }
 }

@@ -1,11 +1,17 @@
 import { PrismaClient } from '@prisma/client';
-import { IAccountModel, IcreateAccountResponse } from '../interfaces/Account.interfaces';
+import { IAccount, IAccountModel, IcreateAccountResponse } from '../interfaces/Account.interfaces';
 
 export default class AccountModel implements IAccountModel {
   public prismaClient: PrismaClient;
 
   constructor(prismaClient: PrismaClient) {
     this.prismaClient = prismaClient;
+  }
+
+  public async getByAccountNumber(accountNumber: string): Promise<IAccount | null> {
+    const account = await this.prismaClient.account.findUnique({ where: { accountNumber }, include: { user: true } });
+
+    return account;
   }
 
   generateAccountNumber(): string {
@@ -19,7 +25,7 @@ export default class AccountModel implements IAccountModel {
     return newAccountNumber;
   }
 
-  async createAccount(userId: number): Promise<IcreateAccountResponse | null> {
+  public async createAccount(userId: number): Promise<IcreateAccountResponse | null> {
     const accountNumber = this.generateAccountNumber();
     const agency = '0001';
     const create = await this.prismaClient.account.create({

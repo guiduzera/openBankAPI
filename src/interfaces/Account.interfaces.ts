@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { Account, PrismaClient, User } from '@prisma/client';
 
 export interface IAccountService {
     accountModel: IAccountModel;
@@ -9,9 +9,14 @@ export interface IAccountModel {
     prismaClient: PrismaClient;
     generateAccountNumber(): string;
     createAccount(userId: number): Promise<IcreateAccountResponse | null>;
+    getByAccountNumber(accountNumber: string): Promise<IAccount | null>;
 }
 
 export interface IcreateAccountResponse {
     accountNumber: string;
     agency: string;
+}
+
+export interface IAccount extends Account {
+    user: User | null;
 }

@@ -1,39 +1,115 @@
 {
-    "openapi": "3.0.0",
-    "info": {
-        "title": "API do openBanking",
-        "description": "Está API é feita com o intuito de simular um banco digital, onde é possível realizar transações, consultar saldo, extrato e etc.",
-        "version": "1.0.0",
-        "contact": {
-            "name": "Suporte",
-            "email": "guidu.dev@gmail.com"
-        }
-    },
-    "servers": [
-        {
-            "url": "http://localhost:3000",
-            "description": "Servidor Local"
-        }
-    ],
-    "tags": [
-        {
-            "name": "Autenticação",
-            "description": "Autenticação de usuário"
-        },
-        {
-            "name": "Usuário",
-            "description": "Operações com usuário"
-        },
-        {
-            "name": "Conta",
-            "description": "Operações com conta"
-        },
-        {
-            "name": "Transação",
-            "description": "Operações com transação"
-        }
-    ],
-    "paths": {
-        
+  "openapi": "3.1.0",
+  "info": {
+    "title": "API do openBanking",
+    "description": "Está API é feita com o intuito de simular um banco digital, onde é possível realizar transações, consultar saldo, extrato e etc.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Suporte",
+      "email": "guidu.dev@gmail.com"
     }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3001",
+      "description": "Servidor Local"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Usuário",
+      "description": "Operações com usuário"
+    },
+    {
+      "name": "Conta",
+      "description": "Operações com conta"
+    },
+    {
+      "name": "Transação",
+      "description": "Operações com transação"
+    }
+  ],
+  "paths": {
+    "/users/register": {
+      "post": {
+        "tags": ["Usuário"],
+        "summary": "Cria um novo usuário",
+        "description": "Cria um novo usuário",
+        "requestBody": {
+          "description": "Objeto JSON que representa o usuário obs: os campos cpf e cnpj são opcionais, mas um deles é obrigatório",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "token de acesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Erro ao criar usuário",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          },
+          "cpf": {
+            "type": "string"
+          },
+          "cnpj": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
 }

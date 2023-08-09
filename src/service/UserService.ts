@@ -19,14 +19,22 @@ export default class UserService implements IUserService {
   public async updateUser(user: IUserUpdateService): Promise<boolean> {
     const { name, email, password, accountNumber } = user;
     const account = await this.accountModel.getByAccountNumber(accountNumber);
-    const userData = await this.userModel.getUserByEmail(email);
-
-    if (userData) throw new CustomError('Esse email já esá em uso!!', 404);
-
     const hashPasword = account?.user?.password || '';
     const isPasswordValid = await this.bcrypt.comparePassword(password, hashPasword);
 
     if (!isPasswordValid) throw new CustomError('Senha inválida!', 401);
+
+    if (account?.user?.email === email) {
+      const update = await this.userModel.updateUser({ name, email, newEmail: email });
+
+      if (update) return true;
+
+      return false;
+    }
+
+    const userData = await this.userModel.getUserByEmail(email);
+
+    if (userData) throw new CustomError('Esse email já esá em uso!!', 400);
 
     const userEmail = account?.user?.email || '';
     const update = await this.userModel.updateUser({ name, email: userEmail, newEmail: email });

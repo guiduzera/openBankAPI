@@ -9,7 +9,7 @@ export default class UniversalErrorMiddleware {
       return res.status(status).json({ message });
     }
 
-    console.error(error);
+    console.log(error);
 
     return res.status(500).json({ message: 'Internal server error' });
   }

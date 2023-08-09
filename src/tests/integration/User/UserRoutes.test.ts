@@ -352,5 +352,172 @@ describe('Testando as rotas do fluxo de usuário!', () => {
         expect(response.body).toEqual({ message: 'O campo accountNumber deve seguir o padrão 00000-0!' });
       });
     });
+
+    describe('Testando o endpoint PUT /update!', () => {
+      beforeAll(async () => {
+        await prismaClient.user.create({
+          data: {
+            id: 1,
+            name: 'Teste',
+            email: 'test@teste.com',
+            password: '$2a$12$UYaNbxvo1siLDuJPUKdELOrx3gfmz20.WjTMtuCzDEM0Xtk4qCgiG',
+            cpf: '',
+            cnpj: '12345678910111',
+          },
+        });
+
+        await prismaClient.account.create({
+          data: {
+            id: 1,
+            accountNumber: '12345-6',
+            agency: '0001',
+            userId: 1,
+            balance: 0,
+            limit: 1000,
+            status: true,
+          },
+        });
+
+        await prismaClient.user.create({
+          data: {
+            id: 2,
+            name: 'Teste2',
+            email: 'test@confirm.com',
+            password: '$2a$12$UYaNbxvo1siLDuJPUKdELOrx3gfmz20.WjTMtuCzDEM0Xtk4qCgiG',
+            cpf: '12345678910',
+            cnpj: '',
+          },
+        });
+
+        await prismaClient.account.create({
+          data: {
+            id: 2,
+            accountNumber: '65432-1',
+            agency: '0001',
+            userId: 2,
+            balance: 0,
+            limit: 1000,
+            status: true,
+          },
+        });
+      });
+
+      afterAll(async () => {
+        const deleteAllAccounts = prismaClient.account.deleteMany();
+        const deleteAllUsers = prismaClient.user.deleteMany();
+
+        await prismaClient.$transaction([deleteAllAccounts, deleteAllUsers]);
+
+        await prismaClient.$disconnect();
+      });
+
+      test('caso esteja tudo ok, com emails diferentes, deve-se retronar 200 e uma mensagem de sucesso', async () => {
+        const token = await request(app).post('/users/login').send({
+          accountNumber: '12345-6',
+          agency: '0001',
+          password: '@1234Sdrt56'
+        }).then((response) => response.body.token);
+        const response = await request(app).put('/users/update').send({
+          name: 'att',
+          email: 'email@att.com',
+          password: '@1234Sdrt56',
+          cpf: '',
+          cnpj: '12345678910111',
+        }).set({ authorization: token });
+
+        expect(response.status).toBe(200);
+        expect(response.body).toEqual({ message: 'Usuário atualizado com sucesso!' });
+      });
+
+      test('caso esteja tudo ok, com emails iguais, deve-se retronar 200 e uma mensagem de sucesso', async () => {
+        const token = await request(app).post('/users/login').send({
+          accountNumber: '12345-6',
+          agency: '0001',
+          password: '@1234Sdrt56'
+        }).then((response) => response.body.token);
+        const response = await request(app).put('/users/update').send({
+          name: 'att',
+          email: 'test@teste.com',
+          password: '@1234Sdrt56',
+          cpf: '',
+          cnpj: '12345678910111',
+        }).set({ authorization: token });
+
+        expect(response.status).toBe(200);
+        expect(response.body).toEqual({ message: 'Usuário atualizado com sucesso!' });
+      });
+
+      test('caso o email já esteja cadastrado, deve-se retornar 400 e uma mensagem de erro', async () => {
+        const token = await request(app).post('/users/login').send({
+          accountNumber: '12345-6',
+          agency: '0001',
+          password: '@1234Sdrt56'
+        }).then((response) => response.body.token);
+        const response = await request(app).put('/users/update').send({
+          name: 'att',
+          email: 'test@confirm.com',
+          password: '@1234Sdrt56',
+          cpf: '',
+          cnpj: '12345678910111',
+        }).set({ authorization: token });
+
+        expect(response.status).toBe(400);
+        expect(response.body).toEqual({ message: 'Esse email já esá em uso!!' });
+      });
+
+      test('Caso a senha esteja incorreta, deve-se retornar 401 e uma mensagem de erro', async () => {
+        const token = await request(app).post('/users/login').send({
+          accountNumber: '12345-6',
+          agency: '0001',
+          password: '@1234Sdrt56'
+        }).then((response) => response.body.token);
+        const response = await request(app).put('/users/update').send({
+          name: 'att',
+          email: 'email@att.com',
+          password: '@1234Sdrt5',
+          cpf: '',
+          cnpj: '12345678910111',
+        }).set({ authorization: token });
+
+        expect(response.status).toBe(401);
+        expect(response.body).toEqual({ message: 'Senha inválida!' });
+      });
+
+      test('caso o token não venha na requisição', async () => {
+        await request(app).post('/users/login').send({
+          accountNumber: '12345-6',
+          agency: '0001',
+          password: '@1234Sdrt56'
+        }).then((response) => response.body.token);
+        const response = await request(app).put('/users/update').send({
+          name: 'att',
+          email: 'email@att.com',
+          password: '@1234Sdrt56',
+          cpf: '',
+          cnpj: '12345678910111',
+        });
+
+        expect(response.status).toBe(401);
+        expect(response.body).toEqual({ message: 'Token não encontrado!' });
+      });
+
+      test('caso o token seja inválido, deve-se retornar 401 e uma mensagem de erro', async () => {
+        await request(app).post('/users/login').send({
+          accountNumber: '12345-6',
+          agency: '0001',
+          password: '@1234Sdrt56'
+        }).then((response) => response.body.token);
+        const response = await request(app).put('/users/update').send({
+          name: 'att',
+          email: 'email@att.com',
+          password: '@1234Sdrt56',
+          cpf: '',
+          cnpj: '12345678910111',
+        }).set({ authorization: 'Token inválido' });
+
+        expect(response.status).toBe(401);
+        expect(response.body).toEqual({ message: 'Token inválido' });
+      });
+    });
   });
 });

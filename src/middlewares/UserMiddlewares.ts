@@ -9,6 +9,7 @@ export default class UserMiddlewares {
 
   constructor(jwt: IJwt) {
     this.jwt = jwt;
+    this.tokenVerify = this.tokenVerify.bind(this);
   }
 
   public static async verifyFields(req: Request, res: Response, next: NextFunction): Promise<Response | void> {

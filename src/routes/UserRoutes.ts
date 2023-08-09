@@ -20,8 +20,10 @@ export default class UserRoutes {
   private prismaClient = prismaClient;
   private jwt = new Jwt();
   private bcrypt = new Bcrypt();
+  private userMiddlewares: UserMiddlewares;
 
   constructor() {
+    this.userMiddlewares = new UserMiddlewares(this.jwt);
     this.accountModel = new AccountModel(this.prismaClient);
     this.userModel = new UserModel(this.prismaClient);
     this.userService = new UserService(this.userModel, this.accountModel, this.jwt, this.bcrypt);
@@ -32,5 +34,7 @@ export default class UserRoutes {
   private userRoutes(): void {
     this.router.post('/register', UserMiddlewares.verifyFields, this.userController.register);
     this.router.post('/login', UserMiddlewares.verifyLoginFields, this.userController.login);
+    this.router.put('/update', this.userMiddlewares.tokenVerify,
+      UserMiddlewares.verifyFields, this.userController.updateUser);
   }
 }

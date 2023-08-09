@@ -9,6 +9,7 @@ export interface IUserService {
     bcrypt: IBycript;
     register(registerReq: IUserRegister): Promise<string>;
     login(loginReq: IUserLogin): Promise<string>;
+    updateUser(user: IUserUpdateService): Promise<boolean>;
 }
 
 export interface IUserModel {
@@ -16,14 +17,25 @@ export interface IUserModel {
     register(registerReq: IUserRegister): Promise<number | null>;
     getUserByEmail(email: string): Promise<User | null>;
     getUserByCpfOrCnpj(cpfOrCnpj: string): Promise<User[]>;
+    updateUser(user: IUserUpdate): Promise<boolean>;
+}
+
+export interface IUserUpdate {
+    name: string;
+    newEmail: string;
+    email: string;
 }
 
 export interface IUserRegister {
     name: string;
     email: string;
-    password: string;
     cpf: string;
     cnpj: string;
+    password: string;
+}
+
+export interface IUserUpdateService extends IUserRegister {
+    accountNumber: string;
 }
 
 export interface IUserLogin {

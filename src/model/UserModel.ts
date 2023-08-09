@@ -1,11 +1,21 @@
 import { PrismaClient, User } from '@prisma/client';
-import { IUserModel, IUserRegister } from '../interfaces/User.interfaces';
+import { IUserModel, IUserRegister, IUserUpdate } from '../interfaces/User.interfaces';
 
 export default class UserModel implements IUserModel {
   public prismaClient: PrismaClient;
 
   constructor(prismaClient: PrismaClient) {
     this.prismaClient = prismaClient;
+  }
+
+  public async updateUser(user: IUserUpdate): Promise<boolean> {
+    const { name, email, newEmail } = user;
+    const update = await this.prismaClient.user.update({
+      where: { email },
+      data: { name, email: newEmail }
+    });
+
+    return !!update;
   }
 
   public async register(registerReq: IUserRegister): Promise<number | null> {

@@ -1,6 +1,6 @@
 import { IAccountModel } from '../interfaces/Account.interfaces';
 import CustomError from '../helpers/CustomError';
-import { IUserLogin, IUserModel, IUserRegister, IUserService } from '../interfaces/User.interfaces';
+import { IUserLogin, IUserModel, IUserRegister, IUserService, IUserUpdateService } from '../interfaces/User.interfaces';
 import { IBycript, IJwt } from '../interfaces/security.interfaces';
 
 export default class UserService implements IUserService {
@@ -14,6 +14,26 @@ export default class UserService implements IUserService {
     this.accountModel = accountModel;
     this.jwt = jwt;
     this.bcrypt = bcrypt;
+  }
+
+  public async updateUser(user: IUserUpdateService): Promise<boolean> {
+    const { name, email, password, accountNumber } = user;
+    const account = await this.accountModel.getByAccountNumber(accountNumber);
+    const userData = await this.userModel.getUserByEmail(email);
+
+    if (userData) throw new CustomError('Esse email já esá em uso!!', 404);
+
+    const hashPasword = account?.user?.password || '';
+    const isPasswordValid = await this.bcrypt.comparePassword(password, hashPasword);
+
+    if (!isPasswordValid) throw new CustomError('Senha inválida!', 401);
+
+    const userEmail = account?.user?.email || '';
+    const update = await this.userModel.updateUser({ name, email: userEmail, newEmail: email });
+
+    if (update) return true;
+
+    return false;
   }
 
   public async login(loginReq: IUserLogin): Promise<string> {

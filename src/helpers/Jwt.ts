@@ -15,9 +15,9 @@ export default class Jwt implements IJwt {
     return sign({ data: payload }, this._secret, this._options);
   }
 
-  public verifyToken(token: string): string {
+  public verifyToken(token: string): IJwtPayload {
     try {
-      const { data } = verify(token, this._secret) as { data: string };
+      const { data } = verify(token, this._secret) as { data: IJwtPayload };
       return data;
     } catch (error) {
       throw new CustomError('Token inválido', 401);

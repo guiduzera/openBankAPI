@@ -1,8 +1,16 @@
 import { NextFunction, Request, Response } from 'express';
 import registerZodSchema from '../helpers/registerZodSchema';
 import CustomError from '../helpers/CustomError';
+import ICustomRequest from '../interfaces/CustomRequest.interface';
+import { IJwt } from '../interfaces/security.interfaces';
 
 export default class UserMiddlewares {
+  public jwt: IJwt;
+
+  constructor(jwt: IJwt) {
+    this.jwt = jwt;
+  }
+
   public static async verifyFields(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
     try {
       const { name, email, password, cpf, cnpj } = req.body;
@@ -41,6 +49,22 @@ export default class UserMiddlewares {
       if (accountNumber.length !== 7 || accountNumber[5] !== '-') {
         return res.status(400).json({ message: 'O campo accountNumber deve seguir o padrão 00000-0!' });
       }
+
+      return next();
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public async tokenVerify(req: ICustomRequest, res: Response, next: NextFunction): Promise<Response | void> {
+    try {
+      const { authorization } = req.headers;
+
+      if (!authorization) throw new CustomError('Token não encontrado!', 401);
+
+      const tokenVerify = this.jwt.verifyToken(authorization);
+
+      req.user = tokenVerify;
 
       return next();
     } catch (error) {

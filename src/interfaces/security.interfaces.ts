@@ -1,6 +1,6 @@
 export interface IJwt {
   createToken(payload: IJwtPayload): string,
-  verifyToken(token: string): string,
+  verifyToken(token: string): IJwtPayload,
 }
 
 export interface IBycript {

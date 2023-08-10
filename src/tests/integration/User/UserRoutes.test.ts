@@ -437,7 +437,7 @@ describe('Testando as rotas do fluxo de usuário!', () => {
         }).then((response) => response.body.token);
         const response = await request(app).put('/users/update').send({
           name: 'att',
-          email: 'test@teste.com',
+          email: 'email@att.com',
           password: '@1234Sdrt56',
           cpf: '',
           cnpj: '12345678910111',

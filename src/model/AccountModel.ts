@@ -8,6 +8,16 @@ export default class AccountModel implements IAccountModel {
     this.prismaClient = prismaClient;
   }
 
+  public async deleteAccount(accountNumber: string): Promise<boolean> {
+    // deleção lógica alterando o campo status para false
+    const deleted = await this.prismaClient.account.update({
+      where: { accountNumber },
+      data: { status: false }
+    });
+
+    return !!deleted;
+  }
+
   public async getByAccountNumber(accountNumber: string): Promise<IAccount | null> {
     const account = await this.prismaClient.account.findUnique({ where: { accountNumber }, include: { user: true } });
 

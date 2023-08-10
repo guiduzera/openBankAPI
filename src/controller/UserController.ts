@@ -10,6 +10,7 @@ export default class UserController {
     this.register = this.register.bind(this);
     this.login = this.login.bind(this);
     this.updateUser = this.updateUser.bind(this);
+    this.deleteUser = this.deleteUser.bind(this);
   }
 
   public async register(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
@@ -43,6 +44,20 @@ export default class UserController {
       if (!update) return res.status(400).json({ message: 'Não foi possível atualizar o usuário!' });
 
       return res.status(200).json({ message: 'Usuário atualizado com sucesso!' });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public async deleteUser(req: ICustomRequest, res: Response, next: NextFunction): Promise<Response | void> {
+    try {
+      const { accountNumber } = req.user || { accountNumber: '' };
+      const { password } = req.body;
+      const deleteAccount = await this.userService.deleteUser({ accountNumber, password });
+
+      if (!deleteAccount) return res.status(400).json({ message: 'Não foi possível deletar o usuário!' });
+
+      return res.status(200).json({ message: 'Usuário deletado com sucesso!' });
     } catch (error) {
       next(error);
     }

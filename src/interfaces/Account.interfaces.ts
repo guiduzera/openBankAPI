@@ -10,6 +10,7 @@ export interface IAccountModel {
     generateAccountNumber(): string;
     createAccount(userId: number): Promise<IcreateAccountResponse | null>;
     getByAccountNumber(accountNumber: string): Promise<IAccount | null>;
+    deleteAccount(accountNumber: string): Promise<boolean>;
 }
 
 export interface IcreateAccountResponse {

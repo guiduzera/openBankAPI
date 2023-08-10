@@ -72,4 +72,19 @@ export default class UserMiddlewares {
       next(error);
     }
   }
+
+  public static async verifyDeleteFields(req: ICustomRequest,
+    res: Response, next: NextFunction): Promise<Response | void> {
+    try {
+      const { password } = req.body;
+
+      if (!password) {
+        return res.status(400).json({ message: 'Senha não informada!' });
+      }
+
+      return next();
+    } catch (error) {
+      next(error);
+    }
+  }
 }

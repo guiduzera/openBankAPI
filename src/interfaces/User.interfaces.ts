@@ -7,9 +7,11 @@ export interface IUserService {
     accountModel: IAccountModel;
     jwt: IJwt;
     bcrypt: IBycript;
+    bcryptVerify(password: string, hash: string): Promise<boolean>;
     register(registerReq: IUserRegister): Promise<string>;
     login(loginReq: IUserLogin): Promise<string>;
     updateUser(user: IUserUpdateService): Promise<boolean>;
+    deleteUser(deleteReq: IUserDelete): Promise<boolean>;
 }
 
 export interface IUserModel {
@@ -36,6 +38,11 @@ export interface IUserRegister {
 
 export interface IUserUpdateService extends IUserRegister {
     accountNumber: string;
+}
+
+export interface IUserDelete {
+    accountNumber: string;
+    password: string;
 }
 
 export interface IUserLogin {

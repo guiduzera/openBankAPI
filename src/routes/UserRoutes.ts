@@ -36,5 +36,7 @@ export default class UserRoutes {
     this.router.post('/login', UserMiddlewares.verifyLoginFields, this.userController.login);
     this.router.put('/update', this.userMiddlewares.tokenVerify,
       UserMiddlewares.verifyFields, this.userController.updateUser);
+    this.router.delete('/delete', this.userMiddlewares.tokenVerify, UserMiddlewares.verifyDeleteFields,
+      this.userController.deleteUser);
   }
 }

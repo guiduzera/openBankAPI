@@ -1,6 +1,7 @@
 import { IAccountModel } from '../interfaces/Account.interfaces';
 import CustomError from '../helpers/CustomError';
-import { IUserLogin, IUserModel, IUserRegister, IUserService, IUserUpdateService } from '../interfaces/User.interfaces';
+import { IUserDelete, IUserLogin, IUserModel, IUserRegister, IUserService, IUserUpdateService
+} from '../interfaces/User.interfaces';
 import { IBycript, IJwt } from '../interfaces/security.interfaces';
 
 export default class UserService implements IUserService {
@@ -16,13 +17,31 @@ export default class UserService implements IUserService {
     this.bcrypt = bcrypt;
   }
 
+  public async bcryptVerify(password: string, hash: string): Promise<boolean> {
+    const isPasswordValid = await this.bcrypt.comparePassword(password, hash);
+
+    if (!isPasswordValid) throw new CustomError('Senha inválida!', 401);
+
+    return true;
+  }
+
+  public async deleteUser(deleteReq: IUserDelete): Promise<boolean> {
+    const { accountNumber, password } = deleteReq;
+    const account = await this.accountModel.getByAccountNumber(accountNumber);
+    const hashPasword = account?.user?.password || '';
+    await this.bcryptVerify(password, hashPasword);
+    const deleteAccount = await this.accountModel.deleteAccount(accountNumber);
+
+    if (!deleteAccount) throw new CustomError('Erro ao deletar conta!', 500);
+
+    return true;
+  }
+
   public async updateUser(user: IUserUpdateService): Promise<boolean> {
     const { name, email, password, accountNumber } = user;
     const account = await this.accountModel.getByAccountNumber(accountNumber);
     const hashPasword = account?.user?.password || '';
-    const isPasswordValid = await this.bcrypt.comparePassword(password, hashPasword);
-
-    if (!isPasswordValid) throw new CustomError('Senha inválida!', 401);
+    await this.bcryptVerify(password, hashPasword);
 
     if (account?.user?.email === email) {
       const update = await this.userModel.updateUser({ name, email, newEmail: email });
@@ -50,7 +69,8 @@ export default class UserService implements IUserService {
 
     if (!account || account.agency !== agency) throw new CustomError('Conta não encontrada!', 404);
 
-    const isPasswordValid = await this.bcrypt.comparePassword(password, account.user?.password || '');
+    const hashPasword = account?.user?.password || '';
+    const isPasswordValid = await this.bcryptVerify(password, hashPasword);
 
     if (!isPasswordValid) throw new CustomError('Senha inválida!', 401);
 
